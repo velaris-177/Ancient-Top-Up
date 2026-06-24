@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TopUpKu - Top Up Game & Pulsa Termurah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-950 text-white">
+  <!-- Navbar -->
+  <nav class="bg-black border-b border-gray-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-2xl font-bold">💰</div>
+        <h1 class="text-2xl font-bold">TopUpKu</h1>
+      </div>
+      <div class="flex items-center gap-8">
+        <a href="#" class="hover:text-purple-400 transition">Beranda</a>
+        <a href="#games" class="hover:text-purple-400 transition">Game</a>
+        <a href="#" class="hover:text-purple-400 transition">Pulsa</a>
+        <a href="#" class="hover:text-purple-400 transition">Cara Top Up</a>
+        <button onclick="showLogin()" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-xl font-medium">Masuk</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-purple-900 via-black to-black py-24">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h2 class="text-5xl font-bold mb-6">Top Up Instan • Harga Termurah</h2>
+      <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">Diamond ML, UC PUBG, Diamonds Free Fire, Pulsa, dan ratusan game lainnya. Proses <span class="text-green-400 font-semibold">kurang dari 1 menit</span>.</p>
+      <button onclick="document.getElementById('games').scrollIntoView({behavior: 'smooth'})" class="bg-white text-black font-bold text-xl px-10 py-4 rounded-2xl hover:bg-gray-200 transition">
+        Mulai Top Up Sekarang →
+      </button>
+    </div>
+  </section>
+
+  <!-- Games Section -->
+  <section id="games" class="max-w-7xl mx-auto px-6 py-16">
+    <h3 class="text-3xl font-bold mb-10 text-center">Pilih Game Favoritmu</h3>
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="game-list">
+      <!-- Diisi oleh JavaScript -->
+    </div>
+  </section>
+
+  <!-- Modal Top Up -->
+  <div id="modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div class="bg-gray-900 rounded-3xl max-w-md w-full mx-4 p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h3 id="modal-title" class="text-2xl font-bold"></h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-white text-3xl">×</button>
+      </div>
+      
+      <div class="mb-6">
+        <label class="block text-sm mb-2">User ID / Nickname</label>
+        <input id="user-id" type="text" class="w-full bg-gray-800 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Masukkan ID kamu">
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm mb-3">Pilih Nominal</label>
+        <div class="grid grid-cols-2 gap-3" id="nominal-options"></div>
+      </div>
+
+      <div class="bg-gray-800 rounded-2xl p-5 mb-8">
+        <div class="flex justify-between mb-2">
+          <span class="text-gray-400">Total Pembayaran</span>
+          <span id="total-price" class="font-bold text-2xl text-green-400">Rp 0</span>
+        </div>
+      </div>
+
+      <button onclick="prosesTopUp()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-5 rounded-2xl font-bold text-lg hover:brightness-110 transition">
+        Bayar Sekarang
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const games = [
+      { name: "Mobile Legends", icon: "🗡️", color: "from-orange-500 to-red-500", priceList: [125000, 250000, 500000, 1000000] },
+      { name: "Free Fire", icon: "🔥", color: "from-blue-500 to-cyan-500", priceList: [75000, 150000, 300000, 600000] },
+      { name: "Genshin Impact", icon: "🌟", color: "from-purple-500 to-violet-500", priceList: [200000, 400000, 800000] },
+      { name: "PUBG Mobile", icon: "🎮", color: "from-green-500 to-emerald-500", priceList: [90000, 180000, 450000] },
+      { name: "Valorant", icon: "🔫", color: "from-red-500 to-rose-500", priceList: [150000, 300000, 700000] },
+      { name: "Roblox", icon: "🟥", color: "from-yellow-400 to-orange-500", priceList: [50000, 100000, 200000] }
+    ];
+
+    function renderGames() {
+      const container = document.getElementById('game-list');
+      container.innerHTML = games.map(game => `
+        <div onclick="selectGame('${game.name}')" class="game-card cursor-pointer bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden">
+          <div class="h-40 bg-gradient-to-br ${game.color} flex items-center justify-center text-7xl">
+            ${game.icon}
+          </div>
+          <div class="p-6">
+            <h4 class="font-bold text-xl">${game.name}</h4>
+            <p class="text-green-400 text-sm mt-1">Mulai dari Rp${game.priceList[0].toLocaleString('id-ID')}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    let selectedGame = null;
+
+    function selectGame(name) {
+      selectedGame = games.find(g => g.name === name);
+      document.getElementById('modal-title').textContent = `Top Up ${name}`;
+      
+      const optionsDiv = document.getElementById('nominal-options');
+      optionsDiv.innerHTML = selectedGame.priceList.map((price, i) => `
+        <button onclick="chooseNominal(${price}, this)" class="nominal-btn border border-gray-700 hover:border-purple-500 rounded-2xl p-4 text-left transition-all">
+          <div class="font-medium">Nominal ${i+1}</div>
+          <div class="text-2xl font-bold text-green-400">Rp ${price.toLocaleString('id-ID')}</div>
+        </button>
+      `).join('');
+      
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function chooseNominal(price, el) {
+      document.querySelectorAll('.nominal-btn').forEach(btn => btn.classList.remove('border-purple-500', 'bg-purple-900/30'));
+      el.classList.add('border-purple-500', 'bg-purple-900/30');
+      document.getElementById('total-price').textContent = `Rp ${price.toLocaleString('id-ID')}`;
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function prosesTopUp() {
+      const userId = document.getElementById('user-id').value;
+      if (!userId) {
+        alert("Masukkan User ID kamu dulu ya!");
+        return;
+      }
+      alert(`✅ Top Up ${selectedGame.name} berhasil!\nUser ID: ${userId}\n\nSaldo akan masuk dalam beberapa detik. Terima kasih! 🎉`);
+      closeModal();
+    }
+
+    function showLogin() {
+      alert("Fitur login belum diimplementasikan (demo). Kamu bisa langsung top up tanpa login di website ini.");
+    }
+
+    // Init
+    renderGames();
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-black py-12 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-6 text-center text-gray-400">
+      <p>© 2026 TopUpKu - Top Up Game Online Terpercaya</p>
+      <p class="text-sm mt-2">Demo website • Bukan situs asli</p>
+    </div>
+  </footer>
+</body>
+</html>
